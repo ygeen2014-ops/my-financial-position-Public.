@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#123b35"><title>موقفي المالي</title>
+<style>
+:root{--green:#123b35;--mint:#e6f1ed;--gold:#d5a84c;--bg:#f5f7f6;--ink:#1d2926}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif}
+header{background:var(--green);color:white;padding:22px 18px 25px;border-radius:0 0 22px 22px}
+h1{font-size:23px;margin:0 0 5px}header p{margin:0;color:#d5e3df;font-size:13px}
+main{padding:14px;max-width:720px;margin:auto}.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:-5px}
+.card{background:white;border-radius:15px;padding:14px;box-shadow:0 2px 10px #142b2410}.card small{color:#687873}.amount{font-size:20px;font-weight:bold;margin-top:8px;overflow-wrap:anywhere}.green{color:#16805d}.red{color:#bd5149}
+nav{display:flex;gap:7px;overflow:auto;margin:16px 0}nav button{white-space:nowrap;border:0;border-radius:20px;padding:10px 14px;background:#e4ebe8;color:#31534a}nav button.active{background:var(--green);color:white}
+section{display:none;background:white;padding:16px;border-radius:16px;margin-bottom:14px}section.active{display:block}h2{font-size:17px;margin:0 0 13px}
+label{display:block;font-size:13px;color:#50615b;margin:10px 0 5px}input,select{width:100%;padding:12px;border:1px solid #dce5e1;border-radius:10px;font:inherit;background:white}
+button.primary{background:var(--green);color:white;border:0;padding:12px 16px;border-radius:10px;font:inherit;width:100%;margin-top:12px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.item{padding:11px 0;border-bottom:1px solid #edf1ef;font-size:14px}.muted{color:#73817c;font-size:12px}.pill{display:inline-block;background:var(--mint);padding:4px 8px;border-radius:20px;font-size:11px}
+footer{text-align:center;color:#8a9691;font-size:11px;padding:14px}
+</style></head><body>
+<header><h1>موقفي المالي</h1><p>MY FINANCIAL POSITION · إدارة دخلك ومصروفاتك</p></header>
+<main>
+<div class="cards">
+<div class="card"><small>إجمالي الدخل</small><div class="amount green" id="incomeTotal">0 ج.س</div></div>
+<div class="card"><small>إجمالي المصروفات</small><div class="amount red" id="expenseTotal">0 ج.س</div></div>
+<div class="card"><small>المتبقي</small><div class="amount" id="balance">0 ج.س</div></div>
+<div class="card"><small>مصروفات اليوم</small><div class="amount" id="todayTotal">0 ج.س</div></div>
+</div>
+<nav>
+<button class="active" data-tab="overview">الرئيسية</button><button data-tab="income">الدخل</button><button data-tab="expense">مصروف جديد</button><button data-tab="installments">الأقساط</button><button data-tab="reports">التقارير</button><button data-tab="settings">الإعدادات</button>
+</nav>
+<section id="overview" class="active"><h2>ملخص الشهر</h2><div id="overviewDetails"></div><div class="muted">يتم حفظ البيانات على الهاتف ولا يحتاج التطبيق إلى الإنترنت.</div></section>
+<section id="income"><h2>تسجيل دخل</h2><label>نوع الدخل</label><select id="incomeType"><option>راتب شهري</option><option>دخل إضافي</option><option>أخرى</option></select><label>المبلغ بالجنيه السوداني</label><input id="incomeAmount" type="number" min="0" placeholder="مثال: 500000"><label>التاريخ</label><input id="incomeDate" type="date"><button class="primary" onclick="addIncome()">حفظ الدخل</button><div id="incomeList"></div></section>
+<section id="expense"><h2>تسجيل مصروف يومي</h2><label>وصف المصروف</label><input id="expenseDesc" placeholder="مثال: مشتريات المنزل"><div class="row"><div><label>المبلغ</label><input id="expenseAmount" type="number" min="0"></div><div><label>التصنيف</label><select id="expenseCategory"><option>طعام</option><option>مواصلات</option><option>اتصالات</option><option>منزل</option><option>مشتريات</option><option>صحة</option><option>أخرى</option></select></div></div><label>التاريخ</label><input id="expenseDate" type="date"><button class="primary" onclick="addExpense()">حفظ المصروف</button><h2 style="margin-top:20px">مصروفات اليوم</h2><div id="todayList"></div></section>
+<section id="installments"><h2>إضافة قسط أو التزام</h2><label>اسم الجهة / وصف القسط</label><input id="instName" placeholder="مثال: قسط جهاز"><div class="row"><div><label>إجمالي المبلغ</label><input id="instTotal" type="number" min="0"></div><div><label>قيمة القسط</label><input id="instAmount" type="number" min="0"></div></div><label>موعد الاستحقاق</label><input id="instDate" type="date"><button class="primary" onclick="addInstallment()">حفظ القسط وجدولة التنبيهات</button><div id="instList"></div></section>
+<section id="reports"><h2>التقارير الشهرية</h2><label>اختر الشهر</label><input id="reportMonth" type="month"><div id="reportResult"></div><button class="primary" onclick="exportCSV()">تصدير البيانات CSV لفتحها في Excel</button></section>
+<section id="settings"><h2>الإعدادات والنسخ الاحتياطي</h2><label>رقم سري من 4 أرقام (اختياري)</label><input id="pinInput" inputmode="numeric" maxlength="4" placeholder="اتركه فارغاً لإلغاء القفل"><button class="primary" onclick="savePin()">حفظ الرقم السري</button><label>استعادة نسخة احتياطية (JSON)</label><input type="file" id="restoreFile" accept=".json"><button class="primary" onclick="restoreBackup()">استعادة البيانات</button><button class="primary" onclick="backup()">تنزيل نسخة احتياطية</button><p class="muted">احتفظ بنسخة احتياطية عند تغيير الهاتف أو حذف التطبيق.</p></section>
+<footer>الإصدار الأول · البيانات محفوظة محلياً على جهازك</footer>
+</main>
+<script>
+const KEY='mfp_data_v1'; let data=JSON.parse(localStorage.getItem(KEY)||'{"income":[],"expenses":[],"installments":[],"pin":""}');
+const today=()=>new Date().toISOString().slice(0,10), month=()=>today().slice(0,7), money=n=>Number(n||0).toLocaleString('en-US')+' ج.س';
+['incomeDate','expenseDate'].forEach(id=>document.getElementById(id).value=today()); document.getElementById('reportMonth').value=month();
+function save(){localStorage.setItem(KEY,JSON.stringify(data));render()}
+function monthItems(a,m){return a.filter(x=>x.date.startsWith(m))}
+function totals(){let m=month(), inc=monthItems(data.income,m).reduce((s,x)=>s+x.amount,0), exp=monthItems(data.expenses,m).reduce((s,x)=>s+x.amount,0);return {inc,exp,bal:inc-exp}}
+function render(){
+let t=totals(),day=data.expenses.filter(x=>x.date===today()).reduce((s,x)=>s+x.amount,0);
+incomeTotal.textContent=money(t.inc);expenseTotal.textContent=money(t.exp);balance.textContent=money(t.bal);todayTotal.textContent=money(day);
+overviewDetails.innerHTML=`<div class="item">دخل الشهر <b>${money(t.inc)}</b></div><div class="item">مصروفات الشهر <b>${money(t.exp)}</b></div><div class="item">المتبقي من دخل الشهر <b>${money(t.bal)}</b></div><div class="item">عدد عمليات المصروف: <b>${monthItems(data.expenses,month()).length}</b></div>`;
+incomeList.innerHTML=data.income.slice().reverse().map(x=>`<div class="item">${x.type} · ${x.date}<b style="float:left">${money(x.amount)}</b></div>`).join('');
+todayList.innerHTML=data.expenses.filter(x=>x.date===today()).map(x=>`<div class="item">${x.desc} <span class="pill">${x.cat}</span><b style="float:left">${money(x.amount)}</b></div>`).join('')||'<p class="muted">لا توجد مصروفات مسجلة اليوم</p>';
+instList.innerHTML=data.installments.map(x=>`<div class="item"><b>${x.name}</b><br><span class="muted">الإجمالي ${money(x.total)} · القسط ${money(x.amount)} · الاستحقاق ${x.date}</span></div>`).join('');
+}
+function addIncome(){let a=+incomeAmount.value;if(a<=0)return alert('أدخل مبلغاً صحيحاً');data.income.push({type:incomeType.value,amount:a,date:incomeDate.value||today()});incomeAmount.value='';save()}
+function addExpense(){let a=+expenseAmount.value;if(a<=0||!expenseDesc.value.trim())return alert('أدخل الوصف والمبلغ');data.expenses.push({desc:expenseDesc.value.trim(),amount:a,cat:expenseCategory.value,date:expenseDate.value||today()});expenseAmount.value='';expenseDesc.value='';save()}
+function addInstallment(){let total=+instTotal.value,amount=+instAmount.value,date=instDate.value,name=instName.value.trim();if(!name||total<=0||amount<=0||!date)return alert('أكمل بيانات القسط');let id=Date.now();data.installments.push({id,name,total,amount,date});[7,3,0].forEach((d,i)=>{let dt=new Date(date+'T09:00:00');dt.setDate(dt.getDate()-d);if(dt.getTime()>Date.now()&&window.AndroidReminder)AndroidReminder.schedule(id*10+i,'تذكير قسط: '+name,d===0?'القسط مستحق اليوم':`متبقي ${d} أيام على موعد القسط`,dt.getTime())});instName.value='';save();alert('تم حفظ القسط. إذا كانت صلاحية التنبيهات مفعلة فستصلك تذكيرات قبل الموعد بأسبوع و3 أيام ويوم الاستحقاق.')}
+function exportCSV(){let rows=[['النوع','الوصف','التصنيف','المبلغ','التاريخ'],...data.income.map(x=>['دخل',x.type,'',x.amount,x.date]),...data.expenses.map(x=>['مصروف',x.desc,x.cat,x.amount,x.date]),...data.installments.map(x=>['قسط',x.name,'',x.amount,x.date])];let csv='\ufeff'+rows.map(r=>r.join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='my-financial-position.csv';a.click()}
+function backup(){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'}));a.download='mfp-backup.json';a.click()}
+function restoreBackup(){let f=restoreFile.files[0];if(!f)return alert('اختر ملف النسخة الاحتياطية');let r=new FileReader();r.onload=()=>{try{data=JSON.parse(r.result);save();alert('تمت استعادة النسخة')}catch(e){alert('ملف غير صالح')}};r.readAsText(f)}
+function savePin(){let p=pinInput.value;if(p&& !/^\d{4}$/.test(p))return alert('الرقم السري يجب أن يكون 4 أرقام');data.pin=p;save();alert('تم حفظ الإعداد')}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button,section').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active');if(b.dataset.tab==='reports')showReport()});
+function showReport(){let m=reportMonth.value||month(),ex=monthItems(data.expenses,m),inc=monthItems(data.income,m),sum=a=>a.reduce((s,x)=>s+x.amount,0),cats={};ex.forEach(x=>cats[x.cat]=(cats[x.cat]||0)+x.amount);reportResult.innerHTML=`<div class="item">الدخل: <b>${money(sum(inc))}</b></div><div class="item">المصروفات: <b>${money(sum(ex))}</b></div><div class="item">المتبقي: <b>${money(sum(inc)-sum(ex))}</b></div>`+Object.entries(cats).map(([k,v])=>`<div class="item">${k}<b style="float:left">${money(v)}</b></div>`).join('')}
+reportMonth.onchange=showReport;
+if(data.pin){let p=prompt('أدخل الرقم السري لفتح موقفي المالي');if(p!==data.pin){document.body.innerHTML='<h3 style="text-align:center;margin-top:30vh">تم إغلاق التطبيق</h3>';throw new Error('locked')}}
+render();showReport();
+</script></body></html>
